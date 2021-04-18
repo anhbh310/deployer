@@ -27,8 +27,8 @@ def get_payload_cb(arch):
 
 def main():
     # Import dlr
-    # arch_support_list = ["x86", "arm", "mps1", "mips", "spc", "m68k", "ppc", "sh4"]
-    arch_support_list = ["x86"]
+    arch_support_list = ["arm", "arm7", "m68k", "mips", "mpsl", "ppc", "sh4", "spc", "x86"]
+    # arch_support_list = ["x86"]
     for arch in arch_support_list:
         # Load binary to payloads
         print("{} is loading ...".format(arch))
